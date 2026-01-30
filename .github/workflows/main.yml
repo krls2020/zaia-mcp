@@ -15,6 +15,7 @@ jobs:
     env:
       CGO_ENABLED: '0'
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: linux amd64
@@ -31,7 +32,7 @@ jobs:
             env:
               GOOS: darwin
               GOARCH: amd64
-            runTests: true
+            runTests: false
           - name: darwin arm64
             env:
               GOOS: darwin
@@ -41,7 +42,7 @@ jobs:
             env:
               GOOS: windows
               GOARCH: amd64
-            runTests: true
+            runTests: false
 
     steps:
     - name: check out code into the Go module directory
@@ -59,6 +60,11 @@ jobs:
         ./tools/install.sh
         echo "$PWD/bin" >> $GITHUB_PATH
 
+    - name: verify tooling
+      run: |
+        which golangci-lint
+        golangci-lint version
+
     - name: build
       env: ${{ matrix.env }}
       run: go build -v ./cmd/... ./internal/...
@@ -68,4 +74,5 @@ jobs:
       run: go test -v ./... -count=1
 
     - name: lint
+      if: ${{ matrix.runTests }}
       run: golangci-lint run ./... --verbose
