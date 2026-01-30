@@ -24,7 +24,7 @@ jobs:
             strip: true
           - name: linux 386
             env: { GOOS: linux, GOARCH: 386 }
-            file: zaia-mcp-linux-i386
+            file: zaia-mcp-linux-386
             compress: true
             strip: true
           - name: darwin amd64

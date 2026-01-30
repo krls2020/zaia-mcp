@@ -37,7 +37,7 @@ linux-amd: ## Build for Linux amd64
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o builds/zaia-mcp-linux-amd64 ./cmd/zaia-mcp/main.go
 
 linux-386: ## Build for Linux 386
-	CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -ldflags "$(LDFLAGS)" -o builds/zaia-mcp-linux-i386 ./cmd/zaia-mcp/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -ldflags "$(LDFLAGS)" -o builds/zaia-mcp-linux-386 ./cmd/zaia-mcp/main.go
 
 darwin-amd: ## Build for macOS amd64
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o builds/zaia-mcp-darwin-amd64 ./cmd/zaia-mcp/main.go
