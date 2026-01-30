@@ -65,9 +65,9 @@ zaia-mcp/
 │   │   ├── executor.go            # Executor interface + CLIExecutor
 │   │   └── mock.go                # MockExecutor for tests
 │   ├── tools/
-│   │   ├── convert.go             # ParseCLIResponse, ToMCPResult
+│   │   ├── convert.go             # ParseCLIResponse, ToMCPResult, ResultFromCLI
 │   │   ├── discover.go ... subdomain.go  # 11 tool implementations
-│   │   └── tools_test.go          # All tool tests (in-memory MCP)
+│   │   └── *_test.go              # Per-tool test files (in-memory MCP)
 │   └── resources/
 │       └── knowledge.go           # zerops://docs/{path} ResourceTemplate
 ├── integration/
@@ -109,7 +109,7 @@ zaia-mcp/
 
 ## Stav implementace
 
-75 testů, 0 failures. 11 MCP tools. Instructions. MCP Resources. Integration testy (9 flows). CI/CD (3 workflows).
+75+ testů, 0 failures. 11 MCP tools. Instructions. MCP Resources. Integration testy (9 flows). CI/CD (4 workflows). E2E testy (17-step lifecycle).
 
 ---
 
@@ -150,5 +150,23 @@ Detailní tools reference → viz `README.md` a kód.
 
 1. Vytvořit `tools/newtool.go`
 2. Zaregistrovat v `server/server.go`
-3. Přidat test v `tools/tools_test.go`
+3. Přidat test v `tools/newtool_test.go`
 4. Přidat integration test v `integration/flow_test.go`
+
+---
+
+## Release
+
+Release je plně automatizovaný přes GitHub Actions:
+
+```bash
+git tag v0.X.0
+git push origin v0.X.0
+```
+
+Workflow `.github/workflows/release.yml` se spustí na `v*` tag push a automaticky:
+1. Buildne binárky pro linux (amd64, 386), darwin (amd64, arm64), windows (amd64)
+2. Komprimuje linux binárky (UPX)
+3. Vytvoří GitHub Release s auto-generated notes a všemi assety
+
+**Není potřeba `gh release create` ani ruční upload.** Stačí tag + push.
