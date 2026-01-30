@@ -202,7 +202,7 @@ func TestFlow_SubdomainEnableDisable(t *testing.T) {
 	h := NewHarness(t)
 
 	// Enable
-	h.Mock().WithZaiaResponse("subdomain --service api --action enable",
+	h.Mock().WithZaiaResponse("subdomain enable --service api",
 		executor.AsyncResult(`[{"processId":"sub-1","status":"PENDING"}]`))
 	h.MustCallSuccess("zerops_subdomain", map[string]interface{}{
 		"serviceHostname": "api",
@@ -210,7 +210,7 @@ func TestFlow_SubdomainEnableDisable(t *testing.T) {
 	})
 
 	// Enable again (idempotent)
-	h.Mock().WithZaiaResponse("subdomain --service api --action enable",
+	h.Mock().WithZaiaResponse("subdomain enable --service api",
 		executor.SyncResult(`{"status":"already_enabled","subdomain":"api-xyz.zerops.app"}`))
 	h.MustCallSuccess("zerops_subdomain", map[string]interface{}{
 		"serviceHostname": "api",
@@ -218,7 +218,7 @@ func TestFlow_SubdomainEnableDisable(t *testing.T) {
 	})
 
 	// Disable
-	h.Mock().WithZaiaResponse("subdomain --service api --action disable",
+	h.Mock().WithZaiaResponse("subdomain disable --service api",
 		executor.AsyncResult(`[{"processId":"sub-2","status":"PENDING"}]`))
 	h.MustCallSuccess("zerops_subdomain", map[string]interface{}{
 		"serviceHostname": "api",
