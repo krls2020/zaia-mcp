@@ -3,6 +3,7 @@ package executor
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os/exec"
 )
 
@@ -21,6 +22,11 @@ type Executor interface {
 	RunZcli(ctx context.Context, args ...string) (*Result, error)
 }
 
+const (
+	defaultZaiaBinary = "zaia"
+	defaultZcliBinary = "zcli"
+)
+
 // CLIExecutor implements Executor using exec.CommandContext.
 type CLIExecutor struct {
 	ZaiaBinary string // path to zaia binary (default: "zaia")
@@ -31,10 +37,10 @@ type CLIExecutor struct {
 // Empty strings use defaults ("zaia" and "zcli").
 func NewCLIExecutor(zaiaBinary, zcliBinary string) *CLIExecutor {
 	if zaiaBinary == "" {
-		zaiaBinary = "zaia"
+		zaiaBinary = defaultZaiaBinary
 	}
 	if zcliBinary == "" {
-		zcliBinary = "zcli"
+		zcliBinary = defaultZcliBinary
 	}
 	return &CLIExecutor{
 		ZaiaBinary: zaiaBinary,
@@ -71,7 +77,8 @@ func (e *CLIExecutor) run(ctx context.Context, binary string, args ...string) (*
 		if ctx.Err() != nil {
 			return result, ctx.Err()
 		}
-		if exitErr, ok := err.(*exec.ExitError); ok {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
 			result.ExitCode = exitErr.ExitCode()
 			// Non-zero exit is not a Go error — CLI outputs JSON on stdout
 			return result, nil

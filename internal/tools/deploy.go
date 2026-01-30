@@ -39,7 +39,7 @@ Returns deployment process info.`,
 
 		result, err := exec.RunZcli(ctx, args...)
 		if err != nil {
-			return errorResult("zcli execution failed: " + err.Error()), nil, nil
+			return errorResult("zcli execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
 		}
 		mcpResult, _ := ResultFromCLI(result)
 		return mcpResult, nil, nil

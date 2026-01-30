@@ -173,6 +173,6 @@ func mustText(t *testing.T, result *mcp.CallToolResult) string {
 	var obj struct {
 		Text string `json:"text"`
 	}
-	json.Unmarshal(b, &obj)
+	_ = json.Unmarshal(b, &obj)
 	return obj.Text
 }

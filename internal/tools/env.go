@@ -51,7 +51,7 @@ Note: Use ${service_hostname} for cross-service references (underscore, not dash
 
 		result, err := exec.RunZaia(ctx, args...)
 		if err != nil {
-			return errorResult("CLI execution failed: " + err.Error()), nil, nil
+			return errorResult("CLI execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
 		}
 		mcpResult, _ := ResultFromCLI(result)
 		return mcpResult, nil, nil

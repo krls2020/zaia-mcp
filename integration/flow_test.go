@@ -47,7 +47,7 @@ func TestFlow_DiscoverThenManage(t *testing.T) {
 	// Step 1: Discover
 	text := h.MustCallSuccess("zerops_discover", nil)
 	var data map[string]interface{}
-	json.Unmarshal([]byte(text), &data)
+	_ = json.Unmarshal([]byte(text), &data)
 	services := data["services"].([]interface{})
 	if len(services) != 1 {
 		t.Fatalf("expected 1 service, got %d", len(services))
@@ -63,7 +63,7 @@ func TestFlow_DiscoverThenManage(t *testing.T) {
 		"serviceHostname": "api",
 	})
 	var processes []map[string]interface{}
-	json.Unmarshal([]byte(text), &processes)
+	_ = json.Unmarshal([]byte(text), &processes)
 	if len(processes) != 1 {
 		t.Fatalf("expected 1 process, got %d", len(processes))
 	}
@@ -80,7 +80,7 @@ func TestFlow_DiscoverThenManage(t *testing.T) {
 		"processId": "proc-1",
 	})
 	var proc map[string]interface{}
-	json.Unmarshal([]byte(text), &proc)
+	_ = json.Unmarshal([]byte(text), &proc)
 	if proc["status"] != "FINISHED" {
 		t.Errorf("expected FINISHED, got %v", proc["status"])
 	}
@@ -111,7 +111,7 @@ func TestFlow_ValidateThenImport(t *testing.T) {
 		"content": yaml,
 	})
 	var processes []map[string]interface{}
-	json.Unmarshal([]byte(text), &processes)
+	_ = json.Unmarshal([]byte(text), &processes)
 	if processes[0]["processId"] != "import-1" {
 		t.Errorf("unexpected processId: %v", processes[0]["processId"])
 	}
@@ -128,7 +128,7 @@ func TestFlow_EnvGetSetGet(t *testing.T) {
 		"serviceHostname": "api",
 	})
 	var data map[string]interface{}
-	json.Unmarshal([]byte(text), &data)
+	_ = json.Unmarshal([]byte(text), &data)
 	envVars := data["envVars"].([]interface{})
 	if len(envVars) != 0 {
 		t.Errorf("expected 0 env vars, got %d", len(envVars))
@@ -192,7 +192,7 @@ func TestFlow_DiscoverThenDelete(t *testing.T) {
 		"confirm":         true,
 	})
 	var processes []map[string]interface{}
-	json.Unmarshal([]byte(text), &processes)
+	_ = json.Unmarshal([]byte(text), &processes)
 	if processes[0]["processId"] != "del-1" {
 		t.Errorf("unexpected processId: %v", processes[0]["processId"])
 	}
@@ -236,7 +236,7 @@ func TestFlow_DeployViaZcli(t *testing.T) {
 		"serviceId": "svc-1",
 	})
 	var data map[string]interface{}
-	json.Unmarshal([]byte(text), &data)
+	_ = json.Unmarshal([]byte(text), &data)
 	if data["deployed"] != true {
 		t.Errorf("expected deployed=true, got %v", data["deployed"])
 	}
@@ -256,7 +256,7 @@ func TestFlow_KnowledgeSearch(t *testing.T) {
 		"query": "postgresql connection string",
 	})
 	var data map[string]interface{}
-	json.Unmarshal([]byte(text), &data)
+	_ = json.Unmarshal([]byte(text), &data)
 	if data["query"] != "postgresql connection string" {
 		t.Errorf("unexpected query: %v", data["query"])
 	}

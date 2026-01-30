@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"context"
 	"encoding/json"
 	"testing"
 
@@ -24,7 +23,7 @@ func NewHarness(t *testing.T) *Harness {
 	mock := executor.NewMockExecutor()
 	srv := server.NewWithExecutor(mock)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	t1, t2 := mcp.NewInMemoryTransports()
 	if _, err := srv.Server().Connect(ctx, t1, nil); err != nil {
 		t.Fatalf("server connect: %v", err)
@@ -52,7 +51,7 @@ func (h *Harness) Mock() *executor.MockExecutor {
 // Call calls an MCP tool and returns the result.
 func (h *Harness) Call(name string, args map[string]interface{}) *mcp.CallToolResult {
 	h.t.Helper()
-	result, err := h.session.CallTool(context.Background(), &mcp.CallToolParams{
+	result, err := h.session.CallTool(h.t.Context(), &mcp.CallToolParams{
 		Name:      name,
 		Arguments: args,
 	})
@@ -95,15 +94,15 @@ func (h *Harness) GetText(result *mcp.CallToolResult) string {
 	var obj struct {
 		Text string `json:"text"`
 	}
-	json.Unmarshal(b, &obj)
+	_ = json.Unmarshal(b, &obj)
 	return obj.Text
 }
 
 // ListTools returns all registered tool names.
 func (h *Harness) ListTools() []string {
 	h.t.Helper()
-	var names []string
-	for tool, err := range h.session.Tools(context.Background(), nil) {
+	names := make([]string, 0, 11)
+	for tool, err := range h.session.Tools(h.t.Context(), nil) {
 		if err != nil {
 			h.t.Fatalf("ListTools: %v", err)
 		}

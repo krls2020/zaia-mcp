@@ -95,6 +95,9 @@ func formatError(resp *CLIResponse) string {
 			result["context"] = ctx
 		}
 	}
-	b, _ := json.Marshal(result)
+	b, err := json.Marshal(result)
+	if err != nil {
+		return fmt.Sprintf(`{"code":%q,"error":%q}`, resp.Code, resp.Error)
+	}
 	return string(b)
 }

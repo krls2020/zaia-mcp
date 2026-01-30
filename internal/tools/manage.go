@@ -87,7 +87,7 @@ Returns process ID for status tracking via zerops_process.`,
 
 		result, err := exec.RunZaia(ctx, args...)
 		if err != nil {
-			return errorResult("CLI execution failed: " + err.Error()), nil, nil
+			return errorResult("CLI execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
 		}
 		mcpResult, _ := ResultFromCLI(result)
 		return mcpResult, nil, nil

@@ -9,7 +9,7 @@ func TestMockExecutor_ZaiaResponse(t *testing.T) {
 	mock := NewMockExecutor().
 		WithZaiaResponse("discover", SyncResult(`{"services":[]}`))
 
-	result, err := mock.RunZaia(context.Background(), "discover")
+	result, err := mock.RunZaia(t.Context(), "discover")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -26,7 +26,7 @@ func TestMockExecutor_ZcliResponse(t *testing.T) {
 	mock := NewMockExecutor().
 		WithZcliResponse("push", SyncResult(`{"deployed":true}`))
 
-	result, err := mock.RunZcli(context.Background(), "push")
+	result, err := mock.RunZcli(t.Context(), "push")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -39,7 +39,7 @@ func TestMockExecutor_ErrorResponse(t *testing.T) {
 	mock := NewMockExecutor().
 		WithZaiaResponse("discover", ErrorResult("AUTH_REQUIRED", "Not authenticated", "Run: zaia login", 2))
 
-	result, err := mock.RunZaia(context.Background(), "discover")
+	result, err := mock.RunZaia(t.Context(), "discover")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -50,7 +50,7 @@ func TestMockExecutor_ErrorResponse(t *testing.T) {
 
 func TestMockExecutor_NoResponse(t *testing.T) {
 	mock := NewMockExecutor()
-	_, err := mock.RunZaia(context.Background(), "unknown")
+	_, err := mock.RunZaia(t.Context(), "unknown")
 	if err == nil {
 		t.Fatal("expected error for unconfigured command")
 	}
@@ -60,7 +60,7 @@ func TestMockExecutor_Default(t *testing.T) {
 	mock := NewMockExecutor().
 		WithDefault(SyncResult(`{}`))
 
-	result, err := mock.RunZaia(context.Background(), "anything")
+	result, err := mock.RunZaia(t.Context(), "anything")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -73,8 +73,8 @@ func TestMockExecutor_CallRecording(t *testing.T) {
 	mock := NewMockExecutor().
 		WithDefault(SyncResult(`{}`))
 
-	mock.RunZaia(context.Background(), "discover")
-	mock.RunZcli(context.Background(), "push", "--serviceId", "abc")
+	_, _ = mock.RunZaia(t.Context(), "discover")
+	_, _ = mock.RunZcli(t.Context(), "push", "--serviceId", "abc")
 
 	if len(mock.Calls) != 2 {
 		t.Fatalf("got %d calls, want 2", len(mock.Calls))
@@ -91,7 +91,7 @@ func TestMockExecutor_ZaiaError(t *testing.T) {
 	mock := NewMockExecutor().
 		WithZaiaError("discover", context.DeadlineExceeded)
 
-	_, err := mock.RunZaia(context.Background(), "discover")
+	_, err := mock.RunZaia(t.Context(), "discover")
 	if err != context.DeadlineExceeded {
 		t.Errorf("got error %v, want DeadlineExceeded", err)
 	}

@@ -8,7 +8,7 @@ import (
 
 func TestCLIExecutor_Echo(t *testing.T) {
 	exec := NewCLIExecutor("echo", "echo")
-	result, err := exec.RunZaia(context.Background(), "hello", "world")
+	result, err := exec.RunZaia(t.Context(), "hello", "world")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -22,7 +22,7 @@ func TestCLIExecutor_Echo(t *testing.T) {
 
 func TestCLIExecutor_NonZeroExit(t *testing.T) {
 	exec := NewCLIExecutor("false", "false")
-	result, err := exec.RunZaia(context.Background())
+	result, err := exec.RunZaia(t.Context())
 	if err != nil {
 		t.Fatalf("non-zero exit should not return Go error, got: %v", err)
 	}
@@ -33,7 +33,7 @@ func TestCLIExecutor_NonZeroExit(t *testing.T) {
 
 func TestCLIExecutor_BinaryNotFound(t *testing.T) {
 	exec := NewCLIExecutor("nonexistent-binary-xyz", "")
-	_, err := exec.RunZaia(context.Background())
+	_, err := exec.RunZaia(t.Context())
 	if err == nil {
 		t.Fatal("expected error for missing binary")
 	}
@@ -41,7 +41,7 @@ func TestCLIExecutor_BinaryNotFound(t *testing.T) {
 
 func TestCLIExecutor_ContextCancellation(t *testing.T) {
 	exec := NewCLIExecutor("sleep", "sleep")
-	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	ctx, cancel := context.WithTimeout(t.Context(), 50*time.Millisecond)
 	defer cancel()
 
 	_, err := exec.RunZaia(ctx, "10")
@@ -52,7 +52,7 @@ func TestCLIExecutor_ContextCancellation(t *testing.T) {
 
 func TestCLIExecutor_Stderr(t *testing.T) {
 	exec := NewCLIExecutor("sh", "sh")
-	result, err := exec.RunZaia(context.Background(), "-c", "echo stderr_msg >&2")
+	result, err := exec.RunZaia(t.Context(), "-c", "echo stderr_msg >&2")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -73,7 +73,7 @@ func TestCLIExecutor_Defaults(t *testing.T) {
 
 func TestCLIExecutor_RunZcli(t *testing.T) {
 	exec := NewCLIExecutor("", "echo")
-	result, err := exec.RunZcli(context.Background(), "test")
+	result, err := exec.RunZcli(t.Context(), "test")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

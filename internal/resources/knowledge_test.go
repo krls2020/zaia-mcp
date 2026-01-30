@@ -1,7 +1,6 @@
 package resources_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -25,7 +24,7 @@ PostgreSQL is the default database.`
 	)
 	resources.RegisterKnowledgeResources(srv, mock)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	t1, t2 := mcp.NewInMemoryTransports()
 	if _, err := srv.Connect(ctx, t1, nil); err != nil {
 		t.Fatalf("server connect: %v", err)
@@ -65,7 +64,7 @@ func TestKnowledgeResource_NotFound(t *testing.T) {
 	)
 	resources.RegisterKnowledgeResources(srv, mock)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	t1, t2 := mcp.NewInMemoryTransports()
 	if _, err := srv.Connect(ctx, t1, nil); err != nil {
 		t.Fatalf("server connect: %v", err)
@@ -93,7 +92,7 @@ func TestKnowledgeResource_ListTemplates(t *testing.T) {
 	)
 	resources.RegisterKnowledgeResources(srv, mock)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	t1, t2 := mcp.NewInMemoryTransports()
 	if _, err := srv.Connect(ctx, t1, nil); err != nil {
 		t.Fatalf("server connect: %v", err)

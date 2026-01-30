@@ -1,7 +1,6 @@
 package tools_test
 
 import (
-	"context"
 	"encoding/json"
 	"testing"
 
@@ -24,7 +23,7 @@ func testServer(t *testing.T, register func(*mcp.Server, executor.Executor), moc
 // callTool creates an in-memory MCP session and calls the named tool.
 func callTool(t *testing.T, srv *mcp.Server, name string, args map[string]interface{}) *mcp.CallToolResult {
 	t.Helper()
-	ctx := context.Background()
+	ctx := t.Context()
 	t1, t2 := mcp.NewInMemoryTransports()
 	if _, err := srv.Connect(ctx, t1, nil); err != nil {
 		t.Fatalf("server connect: %v", err)
@@ -50,7 +49,7 @@ func callTool(t *testing.T, srv *mcp.Server, name string, args map[string]interf
 // callToolExpectError calls a tool and expects a protocol-level error (e.g. missing required params).
 func callToolExpectError(t *testing.T, srv *mcp.Server, name string, args map[string]interface{}) {
 	t.Helper()
-	ctx := context.Background()
+	ctx := t.Context()
 	t1, t2 := mcp.NewInMemoryTransports()
 	if _, err := srv.Connect(ctx, t1, nil); err != nil {
 		t.Fatalf("server connect: %v", err)
@@ -84,7 +83,7 @@ func getTextContent(t *testing.T, result *mcp.CallToolResult) string {
 	var obj struct {
 		Text string `json:"text"`
 	}
-	json.Unmarshal(b, &obj)
+	_ = json.Unmarshal(b, &obj)
 	return obj.Text
 }
 
@@ -462,7 +461,7 @@ func TestSubdomain_Enable(t *testing.T) {
 	if result.IsError {
 		t.Errorf("unexpected error: %s", getTextContent(t, result))
 	}
-	assertArgs(t, mock.Calls[0].Args, "subdomain", "--service", "api", "--action", "enable")
+	assertArgs(t, mock.Calls[0].Args, "subdomain", "enable", "--service", "api")
 }
 
 func TestSubdomain_InvalidAction(t *testing.T) {

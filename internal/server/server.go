@@ -51,6 +51,9 @@ process → check async operation status
 Defaults (use unless user specifies otherwise)
 postgresql@16, valkey@8, meilisearch@1, nats, alpine base, NON_HA, SHARED CPU`
 
+// Version is set at build time via -ldflags
+var Version = "dev"
+
 // MCPServer wraps the MCP server with ZAIA executor.
 type MCPServer struct {
 	server   *mcp.Server
@@ -67,7 +70,7 @@ func NewWithExecutor(exec executor.Executor) *MCPServer {
 	srv := mcp.NewServer(
 		&mcp.Implementation{
 			Name:    "zaia-mcp",
-			Version: "0.1.0",
+			Version: Version,
 		},
 		&mcp.ServerOptions{
 			Instructions: Instructions,
