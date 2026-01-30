@@ -1,0 +1,7 @@
+# Build outputs
+/zaia-mcp
+/bin/
+/builds/
+
+# OS
+.DS_Store
