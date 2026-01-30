@@ -49,6 +49,9 @@ go build -o ./zaia-mcp ./cmd/zaia-mcp         # Build
 go vet ./...                                  # Vet
 go test ./integration/ -v -count=1            # Integration (mocked)
 go test ./e2e/ -tags e2e -v -count=1         # E2E (real API, needs zaia on PATH)
+make lint-fast                                # Fast lint (native, ~3s)
+make lint-local                               # Full lint (native, ~15s)
+make lint                                     # CI lint (3 platformy)
 ```
 
 ---
@@ -119,9 +122,9 @@ zaia-mcp/
 .claude/
 ├── settings.json
 └── hooks/
-    ├── post-test.sh          # Po Edit/Write .go: go test + go vet
+    ├── post-test.sh          # Po Edit/Write .go: go test + go vet + golangci-lint (fast, non-blocking)
     ├── check-claude-md.sh    # Po Edit/Write klíčového souboru: reminder
-    └── pre-commit-check.sh   # Před git commit: kontrola CLAUDE.md
+    └── pre-commit-check.sh   # Před git commit: kontrola CLAUDE.md + golangci-lint (blocking)
 ```
 
 ---

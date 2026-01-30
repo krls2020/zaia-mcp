@@ -39,6 +39,17 @@ if [ -d "$PKG_DIR" ]; then
         echo "-- go vet --"
         echo "$VET_OUTPUT"
     fi
+
+    # Fast lint on changed package (non-blocking)
+    if command -v golangci-lint &>/dev/null; then
+        LINT_OUTPUT=$(golangci-lint run "./${PKG_DIR}" --fast 2>&1)
+        LINT_EXIT=$?
+        if [ $LINT_EXIT -ne 0 ] && [ -n "$LINT_OUTPUT" ]; then
+            echo "-- golangci-lint (fast) --"
+            echo "$LINT_OUTPUT" | tail -15
+            echo "-- LINT WARNINGS --"
+        fi
+    fi
 fi
 
 exit 0

@@ -23,4 +23,21 @@ if [ -n "$KEY_STAGED" ]; then
     fi
 fi
 
+# Lint gate: block commit if golangci-lint fails
+GO_STAGED=$(echo "$STAGED" | grep -E '\.go$' | head -1)
+if [ -n "$GO_STAGED" ]; then
+    if command -v golangci-lint &>/dev/null; then
+        echo "-- pre-commit: golangci-lint run ./... --"
+        LINT_OUTPUT=$(golangci-lint run ./... 2>&1)
+        LINT_EXIT=$?
+        if [ $LINT_EXIT -ne 0 ]; then
+            echo "$LINT_OUTPUT" | tail -30
+            echo "-- LINT FAILED: fix issues before committing --"
+            exit 1
+        else
+            echo "-- LINT PASSED --"
+        fi
+    fi
+fi
+
 exit 0
