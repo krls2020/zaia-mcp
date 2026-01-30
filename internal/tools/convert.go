@@ -86,12 +86,12 @@ func ResultFromCLI(result *executor.Result) (*mcp.CallToolResult, error) {
 // cliErrorResult converts a Go error from CLI execution into an MCP error result.
 // Used by all zaia-backed tools to convert exec failures to user-visible errors.
 func cliErrorResult(err error) (*mcp.CallToolResult, any, error) {
-	return errorResult("CLI execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
+	return errorResult("CLI execution failed: " + err.Error()), nil, nil
 }
 
 // zcliErrorResult converts a Go error from zcli execution into an MCP error result.
 func zcliErrorResult(err error) (*mcp.CallToolResult, any, error) {
-	return errorResult("zcli execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
+	return errorResult("zcli execution failed: " + err.Error()), nil, nil
 }
 
 func formatError(resp *CLIResponse) string {

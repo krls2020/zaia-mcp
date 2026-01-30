@@ -221,7 +221,10 @@ func TestKnowledgeResource_InvalidDocData(t *testing.T) {
 }
 
 func escapeJSON(s string) string {
-	b, _ := json.Marshal(s)
+	b, err := json.Marshal(s)
+	if err != nil {
+		return s
+	}
 	// Strip surrounding quotes from json.Marshal output
 	return string(b[1 : len(b)-1])
 }
