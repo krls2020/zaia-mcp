@@ -68,6 +68,8 @@ func ToMCPResult(resp *CLIResponse) *mcp.CallToolResult {
 }
 
 // ResultFromCLI is a convenience that parses and converts in one step.
+// It never returns a non-nil error; parse failures are converted to MCP error results.
+// The error return exists only to satisfy the MCP handler signature.
 func ResultFromCLI(result *executor.Result) (*mcp.CallToolResult, error) {
 	resp, err := ParseCLIResponse(result)
 	if err != nil {
@@ -79,6 +81,17 @@ func ResultFromCLI(result *executor.Result) (*mcp.CallToolResult, error) {
 		}, nil
 	}
 	return ToMCPResult(resp), nil
+}
+
+// cliErrorResult converts a Go error from CLI execution into an MCP error result.
+// Used by all zaia-backed tools to convert exec failures to user-visible errors.
+func cliErrorResult(err error) (*mcp.CallToolResult, any, error) {
+	return errorResult("CLI execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
+}
+
+// zcliErrorResult converts a Go error from zcli execution into an MCP error result.
+func zcliErrorResult(err error) (*mcp.CallToolResult, any, error) {
+	return errorResult("zcli execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
 }
 
 func formatError(resp *CLIResponse) string {

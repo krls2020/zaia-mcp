@@ -80,7 +80,10 @@ func (m *MockExecutor) resolve(_ context.Context, binary string, args ...string)
 		return result, nil
 	}
 
-	// Try prefix matching: match the longest prefix
+	// Try prefix matching: if the full key doesn't match, check if any registered
+	// key is a prefix of the actual command. Note: Go map iteration order is
+	// non-deterministic, so avoid registering multiple overlapping prefixes
+	// (e.g. "zaia discover" and "zaia discover --service") — use exact keys instead.
 	for k, result := range m.responses {
 		if strings.HasPrefix(key, k) {
 			return result, nil

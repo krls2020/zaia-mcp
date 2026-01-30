@@ -34,6 +34,13 @@ Example YAML:
 
 Returns process ID for tracking via zerops_process.`,
 	}, func(ctx context.Context, req *mcp.CallToolRequest, input ImportInput) (*mcp.CallToolResult, any, error) {
+		if input.Content == "" && input.FilePath == "" {
+			return errorResult("content or filePath is required"), nil, nil
+		}
+		if input.Content != "" && input.FilePath != "" {
+			return errorResult("provide either content or filePath, not both"), nil, nil
+		}
+
 		args := []string{"import"}
 		if input.Content != "" {
 			args = append(args, "--content", input.Content)
@@ -46,7 +53,7 @@ Returns process ID for tracking via zerops_process.`,
 
 		result, err := exec.RunZaia(ctx, args...)
 		if err != nil {
-			return errorResult("CLI execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
+			return cliErrorResult(err)
 		}
 		mcpResult, _ := ResultFromCLI(result)
 		return mcpResult, nil, nil

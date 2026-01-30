@@ -35,7 +35,7 @@ Idempotent: enabling an already enabled subdomain returns success.`,
 		args := []string{"subdomain", input.Action, "--service", input.ServiceHostname}
 		result, err := exec.RunZaia(ctx, args...)
 		if err != nil {
-			return errorResult("CLI execution failed: " + err.Error()), nil, nil //nolint:nilerr // intentional: convert Go error to MCP error result
+			return cliErrorResult(err)
 		}
 		mcpResult, _ := ResultFromCLI(result)
 		return mcpResult, nil, nil

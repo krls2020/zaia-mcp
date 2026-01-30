@@ -20,15 +20,35 @@ Tenká MCP server vrstva (Go binary) která volá ZAIA CLI a ZCLI jako subproces
 
 ## TDD Workflow
 
+### Povinný workflow
+
+```
+1. RED: Napsat failing test PŘED implementací
+2. GREEN: Minimální implementace
+3. REFACTOR: Vyčistit, testy zůstávají zelené
+```
+
+### Pravidla
+
+- NIKDY implementace bez odpovídajícího testu
+- Table-driven testy (Go idiom)
+- Popisné názvy: `TestDiscover_WithService_ReturnsEnvs`
+- Max 300 řádků per soubor
+- In-memory MCP transport pro tool testy — ne mock HTTP
+- **Unit/integration testy = MockExecutor** (žádné síťové volání)
+- **E2E testy (`e2e/`) = real Zerops API** — `go test ./e2e/ -tags e2e`; vyžadují `zaia` binary na PATH a platný token
+
 ### Příkazy
 
 ```bash
 go test ./internal/<pkg> -v -count=1         # Package
+go test ./internal/<pkg> -run TestName -v    # Jednotlivý test
 go test ./... -count=1                        # Vše
 go test ./... -race -count=1                  # S race detection
 go build -o ./zaia-mcp ./cmd/zaia-mcp         # Build
 go vet ./...                                  # Vet
-go test ./integration/ -v -count=1            # Integration
+go test ./integration/ -v -count=1            # Integration (mocked)
+go test ./e2e/ -tags e2e -v -count=1         # E2E (real API, needs zaia on PATH)
 ```
 
 ---
@@ -50,9 +70,13 @@ zaia-mcp/
 │   │   └── tools_test.go          # All tool tests (in-memory MCP)
 │   └── resources/
 │       └── knowledge.go           # zerops://docs/{path} ResourceTemplate
-└── integration/
-    ├── harness.go                 # Test harness
-    └── flow_test.go               # 9 end-to-end flow scenarios
+├── integration/
+│   ├── harness.go                 # Test harness (MockExecutor)
+│   └── flow_test.go               # 9 end-to-end flow scenarios
+└── e2e/                           # Real API tests (build tag: e2e)
+    ├── e2e_test.go                # 17-step full lifecycle test
+    ├── helpers_test.go            # In-memory MCP session + cleanup
+    └── process_test.go            # Process polling helpers
 ```
 
 ### Klíčové soubory (source of truth)
@@ -75,12 +99,17 @@ zaia-mcp/
 - **11 tools** — 5 sync, 5 async, 1 deploy (zcli)
 - **Deploy = zcli push** — jediný tool který nevolá ZAIA
 - **MockExecutor** pro testy — `SyncResult()`, `AsyncResult()`, `ErrorResult()`
+- **JSON-only CLI output** — MCP tools parse stdout JSON
+- **Error conversion** — Go error → MCP error result (nilerr pattern)
+- **`errorResult()` helper** — all tools use same pattern
+- **`ResultFromCLI()`** — parse + convert in one step
+- **Mock keys** — `"binary arg1 arg2 ..."` (space-joined)
 
 ---
 
 ## Stav implementace
 
-75 testů, 0 failures. 11 MCP tools. Instructions. MCP Resources. Integration testy (9 flows).
+75 testů, 0 failures. 11 MCP tools. Instructions. MCP Resources. Integration testy (9 flows). CI/CD (3 workflows).
 
 ---
 
@@ -106,6 +135,14 @@ zaia-mcp/
 | Nový MCP tool | Aktualizuj "Architektura kódu" strom |
 | Změna Executor interface | Aktualizuj "Klíčové soubory" |
 | Změna stavu | Aktualizuj "Stav implementace" |
+
+### Kdy aktualizovat README.md
+
+| Změna | Akce |
+|-------|------|
+| Nový MCP tool | Aktualizuj tools reference |
+| Změna prerekvizit | Aktualizuj prerekvizity |
+| Změna architektury | Aktualizuj diagram |
 
 Detailní tools reference → viz `README.md` a kód.
 

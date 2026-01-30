@@ -1,0 +1,27 @@
+name: E2E Tests
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # daily at 6 AM UTC
+  workflow_dispatch:       # manual trigger
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install zaia
+        run: go install github.com/krls2020/zaia/cmd/zaia@latest
+
+      - name: Login zaia
+        run: zaia login --token ${{ secrets.ZEROPS_E2E_TOKEN }}
+
+      - name: Run E2E tests
+        run: go test ./e2e/ -tags e2e -v -count=1 -timeout 5m

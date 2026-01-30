@@ -1,6 +1,7 @@
 package server
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/zeropsio/zaia-mcp/internal/executor"
@@ -44,14 +45,7 @@ func TestInstructions(t *testing.T) {
 		"Critical Rules",
 	}
 	for _, check := range checks {
-		found := false
-		for i := 0; i < len(Instructions)-len(check)+1; i++ {
-			if Instructions[i:i+len(check)] == check {
-				found = true
-				break
-			}
-		}
-		if !found {
+		if !strings.Contains(Instructions, check) {
 			t.Errorf("Instructions missing %q", check)
 		}
 	}
