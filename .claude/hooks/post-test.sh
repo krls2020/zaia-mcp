@@ -1,27 +1,27 @@
 #!/bin/bash
 # PostToolUse hook: Runs go test + go vet after editing Go files
-# Reads Claude Code hook protocol JSON from stdin
 
-set -euo pipefail
+input=$(cat)
+CHANGED_FILE=$(echo "$input" | grep -o '"file_path":"[^"]*"' | head -1 | sed 's/"file_path":"//;s/"//')
 
-# Read hook input
-INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))" 2>/dev/null || echo "")
+[ -z "$CHANGED_FILE" ] && exit 0
 
-# Only run for Go files in this project
-if [[ "$FILE_PATH" != *"/zaia-mcp/"* ]] || [[ "$FILE_PATH" != *.go ]]; then
-    exit 0
-fi
+# Only for Go files
+echo "$CHANGED_FILE" | grep -qE '\.go$' || exit 0
 
-# Extract package directory
-PKG_DIR=$(dirname "$FILE_PATH")
-# Get path relative to module root
 MODULE_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 
-if [[ "$PKG_DIR" == "$MODULE_ROOT"* ]]; then
-    REL_DIR="${PKG_DIR#$MODULE_ROOT/}"
-    echo "🧪 Running tests for ./$REL_DIR"
-    cd "$MODULE_ROOT"
-    go test "./$REL_DIR" -count=1 2>&1 | tail -20
-    go vet "./$REL_DIR" 2>&1
+# Only run for files in this project
+echo "$CHANGED_FILE" | grep -q "$MODULE_ROOT" || exit 0
+
+cd "$MODULE_ROOT" || exit 0
+
+PKG_DIR=$(echo "$CHANGED_FILE" | sed "s|^${MODULE_ROOT}/||" | xargs dirname)
+
+if [ -d "$PKG_DIR" ]; then
+    echo "-- go test ./${PKG_DIR} --"
+    go test "./${PKG_DIR}" -count=1 2>&1 | tail -20
+    go vet "./${PKG_DIR}" 2>&1
 fi
+
+exit 0

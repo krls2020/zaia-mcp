@@ -1,29 +1,13 @@
 #!/bin/bash
-# PostToolUse hook: Reminds to update CLAUDE.md when key files change
-# Reads Claude Code hook protocol JSON from stdin
+# PostToolUse hook: Remind to check CLAUDE.md when key files change
 
-set -euo pipefail
+input=$(cat)
+CHANGED_FILE=$(echo "$input" | grep -o '"file_path":"[^"]*"' | head -1 | sed 's/"file_path":"//;s/"//')
 
-INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))" 2>/dev/null || echo "")
+[ -z "$CHANGED_FILE" ] && exit 0
 
-# Only check for key files in this project
-if [[ "$FILE_PATH" != *"/zaia-mcp/"* ]]; then
-    exit 0
+if echo "$CHANGED_FILE" | grep -qE "(server/server\.go|executor/executor\.go|tools/|resources/|go\.mod)"; then
+    echo "CLAUDE.md CHECK: Key file changed: $(basename "$CHANGED_FILE"). Check if CLAUDE.md or README.md needs updating."
 fi
 
-# Key files that should trigger CLAUDE.md check
-KEY_FILES=(
-    "server/server.go"
-    "executor/executor.go"
-    "tools/"
-    "resources/"
-    "go.mod"
-)
-
-for pattern in "${KEY_FILES[@]}"; do
-    if [[ "$FILE_PATH" == *"$pattern"* ]]; then
-        echo "📝 Reminder: Check if CLAUDE.md needs updating after changing $(basename "$FILE_PATH")"
-        exit 0
-    fi
-done
+exit 0
