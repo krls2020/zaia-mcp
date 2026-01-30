@@ -9,4 +9,5 @@ export GOBIN=$PWD/bin
 export PATH="${GOBIN}:${PATH}"
 echo "GOBIN=${GOBIN}"
 rm -rf tmp
-curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$GOBIN" v1.64.7
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$GOBIN" v1.64.8 \
+  || GOBIN="$GOBIN" go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8
