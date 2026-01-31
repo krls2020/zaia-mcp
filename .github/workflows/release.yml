@@ -97,9 +97,6 @@ jobs:
           -ldflags "-s -w -X github.com/zeropsio/zaia-mcp/internal/server.Version=${{ github.ref_name }}"
           ./cmd/zaia-mcp/main.go
 
-      - name: codesign binary
-        run: codesign -f -s - builds/${{ matrix.file }}
-
       - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
