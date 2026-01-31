@@ -105,6 +105,44 @@ zaia-mcp/
     └── flow_test.go               # End-to-end flows (9 scenarios)
 ```
 
+## Installation
+
+### From GitHub Releases
+
+Download the binary for your platform from [Releases](https://github.com/krls2020/zaia-mcp/releases) and place it on your PATH:
+
+```bash
+# Example: macOS Apple Silicon
+curl -L https://github.com/krls2020/zaia-mcp/releases/latest/download/zaia-mcp-darwin-arm64 \
+  -o ~/.local/bin/zaia-mcp
+chmod +x ~/.local/bin/zaia-mcp
+```
+
+### macOS code signing fix
+
+Release binaries from v0.4.0 and earlier were cross-compiled on Linux, which produces an invalid adhoc signature on macOS. If the binary gets killed immediately (SIGKILL), re-sign it:
+
+```bash
+codesign -f -s - ~/.local/bin/zaia-mcp
+```
+
+Releases from v0.5.0+ are built natively on macOS runners and do not need this step.
+
+### Claude Code config
+
+Add to your project's `.claude/settings.json` or `~/.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "zaia-mcp": {
+      "command": "zaia-mcp",
+      "args": []
+    }
+  }
+}
+```
+
 ## Prerequisites
 
 - **`zaia` binary** on PATH — handles all Zerops operations
