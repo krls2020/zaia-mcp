@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"os"
 	"os/exec"
+	"strings"
 )
 
 // Result holds the output of a CLI subprocess execution.
@@ -29,8 +31,9 @@ const (
 
 // CLIExecutor implements Executor using exec.CommandContext.
 type CLIExecutor struct {
-	ZaiaBinary string // path to zaia binary (default: "zaia")
-	ZcliBinary string // path to zcli binary (default: "zcli")
+	ZaiaBinary string   // path to zaia binary (default: "zaia")
+	ZcliBinary string   // path to zcli binary (default: "zcli")
+	env        []string // process environment with resolved PATH
 }
 
 // NewCLIExecutor creates a new CLIExecutor with the given binary paths.
@@ -42,9 +45,11 @@ func NewCLIExecutor(zaiaBinary, zcliBinary string) *CLIExecutor {
 	if zcliBinary == "" {
 		zcliBinary = defaultZcliBinary
 	}
+	env := buildEnvWithResolvedPATH()
 	return &CLIExecutor{
 		ZaiaBinary: zaiaBinary,
 		ZcliBinary: zcliBinary,
+		env:        env,
 	}
 }
 
@@ -60,6 +65,7 @@ func (e *CLIExecutor) RunZcli(ctx context.Context, args ...string) (*Result, err
 
 func (e *CLIExecutor) run(ctx context.Context, binary string, args ...string) (*Result, error) {
 	cmd := exec.CommandContext(ctx, binary, args...)
+	cmd.Env = e.env
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -88,4 +94,44 @@ func (e *CLIExecutor) run(ctx context.Context, binary string, args ...string) (*
 	}
 
 	return result, nil
+}
+
+// resolveShellPATH runs the user's login shell to get the full PATH,
+// including paths added by tools like nvm, homebrew, etc. that are
+// configured in shell profiles but not available to MCP servers.
+func resolveShellPATH() string {
+	shell := os.Getenv("SHELL")
+	if shell == "" {
+		shell = "/bin/sh"
+	}
+	out, err := exec.Command(shell, "-lc", "echo $PATH").Output()
+	if err != nil {
+		return os.Getenv("PATH")
+	}
+	resolved := strings.TrimSpace(string(out))
+	if resolved == "" {
+		return os.Getenv("PATH")
+	}
+	return resolved
+}
+
+// buildEnvWithResolvedPATH returns a copy of the current process environment
+// with PATH replaced by the value from the user's login shell.
+func buildEnvWithResolvedPATH() []string {
+	resolvedPATH := resolveShellPATH()
+	env := os.Environ()
+	result := make([]string, 0, len(env))
+	found := false
+	for _, e := range env {
+		if strings.HasPrefix(e, "PATH=") {
+			result = append(result, "PATH="+resolvedPATH)
+			found = true
+		} else {
+			result = append(result, e)
+		}
+	}
+	if !found {
+		result = append(result, "PATH="+resolvedPATH)
+	}
+	return result
 }

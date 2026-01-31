@@ -2,6 +2,7 @@ package executor
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 )
@@ -79,5 +80,34 @@ func TestCLIExecutor_RunZcli(t *testing.T) {
 	}
 	if string(result.Stdout) != "test\n" {
 		t.Errorf("got stdout %q, want %q", result.Stdout, "test\n")
+	}
+}
+
+func TestResolveShellPATH_ReturnsNonEmpty(t *testing.T) {
+	path := resolveShellPATH()
+	if path == "" {
+		t.Fatal("resolveShellPATH returned empty string")
+	}
+	// Should contain at least one standard bin directory
+	if !strings.Contains(path, "/bin") && !strings.Contains(path, "/usr") {
+		t.Errorf("resolved PATH %q does not contain expected directories", path)
+	}
+}
+
+func TestCLIExecutor_EnvContainsPATH(t *testing.T) {
+	exec := NewCLIExecutor("echo", "echo")
+	found := false
+	for _, e := range exec.env {
+		if strings.HasPrefix(e, "PATH=") {
+			found = true
+			val := strings.TrimPrefix(e, "PATH=")
+			if val == "" {
+				t.Error("PATH value in env is empty")
+			}
+			break
+		}
+	}
+	if !found {
+		t.Fatal("env slice does not contain a PATH entry")
 	}
 }

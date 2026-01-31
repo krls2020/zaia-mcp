@@ -149,6 +149,8 @@ Add to your project's `.claude/settings.json` or `~/.claude/settings.json`:
 - **`zcli` binary** on PATH — used only for `zerops_deploy` tool
 - Both must be independently authenticated (`zaia login` + `zcli login`)
 
+**PATH resolution:** The MCP server automatically resolves PATH from the user's login shell (`$SHELL -lc 'echo $PATH'`) at startup, so binaries installed via nvm, homebrew, or other profile-configured tools are found without manual PATH configuration.
+
 ## Dependencies
 
 ```
