@@ -18,7 +18,9 @@ jobs:
           go-version-file: go.mod
 
       - name: Install zaia
-        run: go install github.com/krls2020/zaia/cmd/zaia@latest
+        run: |
+          git clone --depth 1 https://github.com/krls2020/zaia.git /tmp/zaia
+          cd /tmp/zaia && go build -o $GOPATH/bin/zaia ./cmd/zaia
 
       - name: Login zaia
         run: zaia login --token ${{ secrets.ZEROPS_E2E_TOKEN }}
