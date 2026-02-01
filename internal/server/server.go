@@ -34,10 +34,12 @@ Critical Rules
 - Internal networking: ALWAYS http://, NEVER https:// (SSL terminates at L7 balancer)
 - Ports: 10-65435 only (0-9 and 65436+ reserved)
 - HA mode: immutable after creation (cannot change single↔HA)
+- mode: NON_HA or HA REQUIRED for databases/caches in import.yml (omitting passes dryRun but fails real import)
 - prepareCommands: cached. initCommands: run every start
 - Env var cross-ref: ${service_hostname} (underscore, not dash)
 - Cloudflare: MUST use "Full (strict)" SSL mode
 - No localhost — services communicate via hostname
+- zerops_subdomain enable: only works on deployed (ACTIVE) services. For new services use enableSubdomainAccess in import.yml
 
 Tools
 discover → project info + service list (call first)
@@ -48,9 +50,10 @@ manage → start/stop/restart/scale (async)
 configure → env vars + import infrastructure (async)
 delete → remove service (requires confirm)
 process → check async operation status
+events → project activity timeline (processes + deploys)
 
 Defaults (use unless user specifies otherwise)
-postgresql@16, valkey@8, meilisearch@1, nats, alpine base, NON_HA, SHARED CPU`
+postgresql@16, valkey@7.2, meilisearch@1.10, nats@2.10, alpine base, NON_HA, SHARED CPU`
 
 // Version is set at build time via -ldflags
 var Version = "dev"
@@ -112,12 +115,13 @@ func (s *MCPServer) Server() *mcp.Server {
 
 // registerTools registers all 11 MCP tools.
 func (s *MCPServer) registerTools() {
-	// Sync tools (5)
+	// Sync tools (6)
 	tools.RegisterDiscover(s.server, s.executor)
 	tools.RegisterLogs(s.server, s.executor)
 	tools.RegisterValidate(s.server, s.executor)
 	tools.RegisterKnowledge(s.server, s.executor)
 	tools.RegisterProcess(s.server, s.executor)
+	tools.RegisterEvents(s.server, s.executor)
 
 	// Async tools (5)
 	tools.RegisterManage(s.server, s.executor)

@@ -18,6 +18,7 @@ func TestAllToolsRegistered(t *testing.T) {
 		"zerops_deploy",
 		"zerops_discover",
 		"zerops_env",
+		"zerops_events",
 		"zerops_import",
 		"zerops_knowledge",
 		"zerops_logs",
