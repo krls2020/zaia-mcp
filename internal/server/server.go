@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/zeropsio/zaia-mcp/internal/executor"
@@ -65,8 +66,18 @@ func New() *MCPServer {
 	return NewWithExecutor(executor.NewCLIExecutor("", ""))
 }
 
+// NewWithLogger creates a new ZAIA-MCP server with a logger and the default CLI executor.
+func NewWithLogger(logger *slog.Logger) *MCPServer {
+	return NewWithExecutorAndLogger(executor.NewCLIExecutor("", ""), logger)
+}
+
 // NewWithExecutor creates a new ZAIA-MCP server with a custom executor.
 func NewWithExecutor(exec executor.Executor) *MCPServer {
+	return NewWithExecutorAndLogger(exec, nil)
+}
+
+// NewWithExecutorAndLogger creates a new ZAIA-MCP server with a custom executor and logger.
+func NewWithExecutorAndLogger(exec executor.Executor, logger *slog.Logger) *MCPServer {
 	srv := mcp.NewServer(
 		&mcp.Implementation{
 			Name:    "zaia-mcp",
@@ -74,6 +85,7 @@ func NewWithExecutor(exec executor.Executor) *MCPServer {
 		},
 		&mcp.ServerOptions{
 			Instructions: Instructions,
+			Logger:       logger,
 		},
 	)
 

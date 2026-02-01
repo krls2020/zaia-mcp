@@ -17,6 +17,10 @@ type DeleteInput struct {
 func RegisterDelete(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_delete",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Delete Service",
+			DestructiveHint: boolPtr(true),
+		},
 		Description: `Delete a service from the project.
 
 IMPORTANT: This is destructive. Deletes the service and all its data.

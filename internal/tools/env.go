@@ -19,6 +19,10 @@ type EnvInput struct {
 func RegisterEnv(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_env",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Manage Env Vars",
+			DestructiveHint: boolPtr(false),
+		},
 		Description: `Manage environment variables.
 
 Actions:

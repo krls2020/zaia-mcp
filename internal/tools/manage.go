@@ -28,6 +28,10 @@ type ManageInput struct {
 func RegisterManage(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_manage",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Manage Service",
+			DestructiveHint: boolPtr(true),
+		},
 		Description: `Manage service lifecycle and scaling.
 
 Actions:

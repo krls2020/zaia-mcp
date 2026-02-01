@@ -22,6 +22,11 @@ type LogsInput struct {
 func RegisterLogs(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_logs",
+		Annotations: &mcp.ToolAnnotations{
+			Title:          "Fetch Logs",
+			ReadOnlyHint:   true,
+			IdempotentHint: true,
+		},
 		Description: `Fetch logs from a Zerops service.
 
 Parameters:

@@ -18,6 +18,10 @@ type DeployInput struct {
 func RegisterDeploy(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_deploy",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Deploy Code",
+			DestructiveHint: boolPtr(false),
+		},
 		Description: `Deploy code to a Zerops service using zcli push.
 
 Uses the zerops.yml in the working directory.

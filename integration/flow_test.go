@@ -37,6 +37,37 @@ func TestAllToolsRegistered(t *testing.T) {
 	}
 }
 
+func TestAllToolsHaveAnnotations(t *testing.T) {
+	h := NewHarness(t)
+	toolsWithAnnotations := h.ListToolsWithAnnotations()
+
+	for name, tool := range toolsWithAnnotations {
+		if tool.Annotations == nil {
+			t.Errorf("tool %q has no annotations", name)
+			continue
+		}
+		if tool.Annotations.Title == "" {
+			t.Errorf("tool %q has no title in annotations", name)
+		}
+	}
+
+	// Verify destructive tools
+	for _, name := range []string{"zerops_manage", "zerops_delete"} {
+		tool := toolsWithAnnotations[name]
+		if tool.Annotations.DestructiveHint == nil || !*tool.Annotations.DestructiveHint {
+			t.Errorf("tool %q should be marked destructive", name)
+		}
+	}
+
+	// Verify read-only tools
+	for _, name := range []string{"zerops_discover", "zerops_logs", "zerops_validate", "zerops_knowledge", "zerops_process"} {
+		tool := toolsWithAnnotations[name]
+		if !tool.Annotations.ReadOnlyHint {
+			t.Errorf("tool %q should be marked read-only", name)
+		}
+	}
+}
+
 func TestFlow_DiscoverThenManage(t *testing.T) {
 	h := NewHarness(t)
 

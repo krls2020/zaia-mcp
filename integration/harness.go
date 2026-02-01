@@ -110,3 +110,16 @@ func (h *Harness) ListTools() []string {
 	}
 	return names
 }
+
+// ListToolsWithAnnotations returns all registered tools indexed by name.
+func (h *Harness) ListToolsWithAnnotations() map[string]*mcp.Tool {
+	h.t.Helper()
+	result := make(map[string]*mcp.Tool)
+	for tool, err := range h.session.Tools(h.t.Context(), nil) {
+		if err != nil {
+			h.t.Fatalf("ListToolsWithAnnotations: %v", err)
+		}
+		result[tool.Name] = tool
+	}
+	return result
+}

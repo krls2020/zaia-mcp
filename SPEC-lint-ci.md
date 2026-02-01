@@ -37,9 +37,9 @@ test-race:
 	go test -race ./... -count=1
 
 lint:
-	GOOS=darwin GOARCH=arm64 golangci-lint run ./... --verbose
-	GOOS=linux GOARCH=amd64 golangci-lint run ./... --verbose
-	GOOS=windows GOARCH=amd64 golangci-lint run ./... --verbose
+	GOOS=darwin GOARCH=arm64 golangci-lint run ./...
+	GOOS=linux GOARCH=amd64 golangci-lint run ./...
+	GOOS=windows GOARCH=amd64 golangci-lint run ./...
 
 vet:
 	go vet ./...
@@ -90,7 +90,7 @@ export GOBIN=$PWD/bin
 export PATH="${GOBIN}:${PATH}"
 echo "GOBIN=${GOBIN}"
 rm -rf tmp
-curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$GOBIN" v1.64.7
+GOBIN="$GOBIN" go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.8.0
 ```
 
 Nezapomenout: `chmod +x tools/install.sh`
@@ -170,7 +170,7 @@ jobs:
       run: go test -v ./... -count=1
 
     - name: lint
-      run: golangci-lint run ./... --verbose
+      run: golangci-lint run ./...
 ```
 
 ### Kritické: `echo "$PWD/bin" >> $GITHUB_PATH`
@@ -302,7 +302,7 @@ Stejné jako release.yml, ale:
 
 ## Lint opravy
 
-Po vytvoření souborů spusť `golangci-lint run ./... --verbose` lokálně a oprav všechny findings.
+Po vytvoření souborů spusť `golangci-lint run ./...` lokálně a oprav všechny findings.
 
 Typické vzory k opravě (ze zkušenosti s zaia):
 - `errcheck` — `_ = json.Unmarshal(...)` v testech, `_ = writeJSON(...)` v produkci
@@ -316,7 +316,7 @@ Typické vzory k opravě (ze zkušenosti s zaia):
 
 ## Ověření
 
-1. `golangci-lint run ./... --verbose` → 0 issues
+1. `golangci-lint run ./...` → 0 issues
 2. `go test ./... -count=1` → all pass
 3. `go build -o builds/zaia-mcp-test -ldflags "-s -w -X github.com/zeropsio/zaia-mcp/internal/server.Version=v0.0.1-test" ./cmd/zaia-mcp/main.go` → OK
 4. Push → CI workflow zelený

@@ -17,6 +17,11 @@ type SubdomainInput struct {
 func RegisterSubdomain(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_subdomain",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Manage Subdomain",
+			DestructiveHint: boolPtr(false),
+			IdempotentHint:  true,
+		},
 		Description: `Enable or disable Zerops subdomain for a service.
 
 Actions:

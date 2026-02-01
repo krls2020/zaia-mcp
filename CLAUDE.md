@@ -68,14 +68,15 @@ zaia-mcp/
 │   │   ├── executor.go            # Executor interface + CLIExecutor
 │   │   └── mock.go                # MockExecutor for tests
 │   ├── tools/
+│   │   ├── annotations.go         # boolPtr helper for ToolAnnotations
 │   │   ├── convert.go             # ParseCLIResponse, ToMCPResult, ResultFromCLI
 │   │   ├── discover.go ... subdomain.go  # 11 tool implementations
-│   │   └── *_test.go              # Per-tool test files (in-memory MCP)
+│   │   └── *_test.go              # Per-tool + annotations test files (in-memory MCP)
 │   └── resources/
 │       └── knowledge.go           # zerops://docs/{path} ResourceTemplate
 ├── integration/
 │   ├── harness.go                 # Test harness (MockExecutor)
-│   └── flow_test.go               # 9 end-to-end flow scenarios
+│   └── flow_test.go               # 10 end-to-end flow scenarios
 └── e2e/                           # Real API tests (build tag: e2e)
     ├── e2e_test.go                # 17-step full lifecycle test
     ├── helpers_test.go            # In-memory MCP session + cleanup
@@ -112,7 +113,7 @@ zaia-mcp/
 
 ## Stav implementace
 
-75+ testů, 0 failures. 11 MCP tools. Instructions. MCP Resources. Integration testy (9 flows). CI/CD (4 workflows). E2E testy (17-step lifecycle).
+75+ testů, 0 failures. 11 MCP tools s ToolAnnotations (Title, ReadOnly/Destructive/Idempotent/OpenWorld hints). go-sdk v1.2.0. slog Logger (JSON, stderr). Instructions. MCP Resources. Integration testy (10 flows). CI/CD (4 workflows). E2E testy (17-step lifecycle).
 
 ---
 

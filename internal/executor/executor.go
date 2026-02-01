@@ -104,7 +104,7 @@ func resolveShellPATH() string {
 	if shell == "" {
 		shell = "/bin/sh"
 	}
-	out, err := exec.Command(shell, "-lc", "echo $PATH").Output()
+	out, err := exec.CommandContext(context.Background(), shell, "-lc", "echo $PATH").Output()
 	if err != nil {
 		return os.Getenv("PATH")
 	}

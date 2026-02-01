@@ -18,6 +18,10 @@ type ImportInput struct {
 func RegisterImport(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_import",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Import Services",
+			DestructiveHint: boolPtr(false),
+		},
 		Description: `Import services from YAML into the current project.
 
 YAML format contains a 'services:' array. Do NOT include 'project:' section.

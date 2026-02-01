@@ -18,6 +18,12 @@ type ValidateInput struct {
 func RegisterValidate(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_validate",
+		Annotations: &mcp.ToolAnnotations{
+			Title:          "Validate Config",
+			ReadOnlyHint:   true,
+			IdempotentHint: true,
+			OpenWorldHint:  boolPtr(false),
+		},
 		Description: `Validate YAML configuration.
 
 Validates zerops.yml or import.yml for:

@@ -18,6 +18,12 @@ type KnowledgeInput struct {
 func RegisterKnowledge(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_knowledge",
+		Annotations: &mcp.ToolAnnotations{
+			Title:          "Search Knowledge",
+			ReadOnlyHint:   true,
+			IdempotentHint: true,
+			OpenWorldHint:  boolPtr(false),
+		},
 		Description: `Search Zerops knowledge base.
 
 This is KEYWORD search (BM25). Use specific terms:

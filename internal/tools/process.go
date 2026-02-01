@@ -17,6 +17,11 @@ type ProcessInput struct {
 func RegisterProcess(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_process",
+		Annotations: &mcp.ToolAnnotations{
+			Title:          "Check Process",
+			ReadOnlyHint:   true,
+			IdempotentHint: true,
+		},
 		Description: `Check or cancel an async process.
 
 Actions:

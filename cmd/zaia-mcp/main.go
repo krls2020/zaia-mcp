@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,5 +22,7 @@ func run() error {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	return server.New().Run(ctx)
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
+
+	return server.NewWithLogger(logger).Run(ctx)
 }

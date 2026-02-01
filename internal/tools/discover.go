@@ -17,6 +17,11 @@ type DiscoverInput struct {
 func RegisterDiscover(srv *mcp.Server, exec executor.Executor) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "zerops_discover",
+		Annotations: &mcp.ToolAnnotations{
+			Title:          "Discover Services",
+			ReadOnlyHint:   true,
+			IdempotentHint: true,
+		},
 		Description: `Discover services in your Zerops project.
 
 Call this first to get service hostnames for other tools.
