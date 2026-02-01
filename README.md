@@ -118,15 +118,9 @@ curl -L https://github.com/krls2020/zaia-mcp/releases/latest/download/zaia-mcp-d
 chmod +x ~/.local/bin/zaia-mcp
 ```
 
-### macOS code signing fix
+### Build
 
-Release binaries from v0.4.0 and earlier were cross-compiled on Linux, which produces an invalid adhoc signature on macOS. If the binary gets killed immediately (SIGKILL), re-sign it:
-
-```bash
-codesign -f -s - ~/.local/bin/zaia-mcp
-```
-
-Releases from v0.5.0+ are built natively on macOS runners and do not need this step.
+All release binaries (including darwin) are cross-compiled on ubuntu-22.04 using Go 1.24, unified with the [ZAIA CLI](https://github.com/krls2020/zaia) build pipeline. The `zaia setup` installer uses atomic file replacement (tmp + rename) to ensure a fresh inode on each update, which clears macOS AMFI signature cache.
 
 ### Claude Code config
 

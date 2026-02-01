@@ -168,8 +168,10 @@ git push origin v0.X.0
 ```
 
 Workflow `.github/workflows/release.yml` se spustí na `v*` tag push a automaticky:
-1. Buildne binárky pro linux (amd64, 386), darwin (amd64, arm64), windows (amd64)
+1. Buildne binárky pro linux (amd64, 386), darwin (amd64, arm64), windows (amd64) — vše cross-kompilací na ubuntu-22.04 (sjednoceno se zaia)
 2. Komprimuje linux binárky (UPX)
 3. Vytvoří GitHub Release s auto-generated notes a všemi assety
 
 **Není potřeba `gh release create` ani ruční upload.** Stačí tag + push.
+
+> **Go verze:** 1.24.x (sjednoceno se zaia). Go 1.25 má regresi v cross-kompilaci darwin Mach-O signatur.

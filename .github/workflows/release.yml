@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build-linux:
+  build:
     name: build ${{ matrix.name }}
     runs-on: ubuntu-22.04
     env:
@@ -27,6 +27,16 @@ jobs:
             file: zaia-mcp-linux-386
             compress: true
             strip: true
+          - name: darwin amd64
+            env: { GOOS: darwin, GOARCH: amd64 }
+            file: zaia-mcp-darwin-amd64
+            compress: false
+            strip: false
+          - name: darwin arm64
+            env: { GOOS: darwin, GOARCH: arm64 }
+            file: zaia-mcp-darwin-arm64
+            compress: false
+            strip: false
           - name: windows amd64
             env: { GOOS: windows, GOARCH: amd64 }
             file: zaia-mcp-win-x64.exe
@@ -38,7 +48,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
         id: go
@@ -64,48 +74,9 @@ jobs:
           name: ${{ matrix.file }}
           path: ./builds/${{ matrix.file }}
 
-  build-darwin:
-    name: build ${{ matrix.name }}
-    runs-on: macos-latest
-    env:
-      CGO_ENABLED: '0'
-    strategy:
-      matrix:
-        include:
-          - name: darwin amd64
-            env: { GOOS: darwin, GOARCH: amd64 }
-            file: zaia-mcp-darwin-amd64
-          - name: darwin arm64
-            env: { GOOS: darwin, GOARCH: arm64 }
-            file: zaia-mcp-darwin-arm64
-
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v4
-
-      - name: set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: "go.mod"
-        id: go
-
-      - name: build
-        env: ${{ matrix.env }}
-        run: >-
-          go build
-          -o builds/${{ matrix.file }}
-          -ldflags "-s -w -X github.com/zeropsio/zaia-mcp/internal/server.Version=${{ github.ref_name }}"
-          ./cmd/zaia-mcp/main.go
-
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.file }}
-          path: ./builds/${{ matrix.file }}
-
   release:
     name: create release
-    needs: [build-linux, build-darwin]
+    needs: build
     runs-on: ubuntu-22.04
     steps:
       - name: download all artifacts
