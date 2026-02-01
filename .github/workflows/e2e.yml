@@ -20,7 +20,7 @@ jobs:
       - name: Install zaia
         run: |
           git clone --depth 1 https://github.com/krls2020/zaia.git /tmp/zaia
-          cd /tmp/zaia && go build -o $GOPATH/bin/zaia ./cmd/zaia
+          cd /tmp/zaia && go build -o "$(go env GOPATH)/bin/zaia" ./cmd/zaia
 
       - name: Login zaia
         run: zaia login --token ${{ secrets.ZEROPS_E2E_TOKEN }}
